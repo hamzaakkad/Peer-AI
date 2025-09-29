@@ -19,6 +19,7 @@ struct ContentView: View {
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
+                 
                 
                 VStack {
                     // MARK: Top Title
@@ -43,7 +44,9 @@ struct ContentView: View {
                         NavigationLink(destination: LlamaView()) {
                             GlassButton(title: "Llama")
                         }
-                        
+//                        NavigationLink(destination: LlamaView()) {
+//                            GlassButton(title: "Llama")
+//                        }
                     }
                     .padding(.horizontal, 30)
                     
@@ -54,6 +57,7 @@ struct ContentView: View {
                         .foregroundColor(.white.opacity(0.85))
                         .font(.caption)
                         .padding(.bottom, 20)
+                    
                     Spacer()
                 }
             }

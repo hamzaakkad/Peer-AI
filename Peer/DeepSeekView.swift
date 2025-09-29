@@ -11,17 +11,19 @@ import SwiftUI
 //    let id: UUID
 //    let text: String
 //    let isUser: Bool
-//    
+//
 //    init(id: UUID = UUID(), text: String, isUser: Bool) {
 //        self.id = id
 //        self.text = text
 //        self.isUser = isUser
 //    }
 //}
-
 struct DeepSeekView: View {
     @State private var messages: [Message] = []
     @State private var messageText: String = ""
+    @AppStorage("DeepSeek_API") private var DeepSeek_API: String = "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"
+    @AppStorage("DeepSeek_Model") private var DeepSeek_Model: String = "deepseek/deepseek-chat-v3.1:free"
+
     @Environment(\.presentationMode) var presentationMode
     var wallpaper = Int.random(in: 0...46)
     @State private var wallpaperArray = ["wallpaper", "wallpaper2", "wallpaper3", "wallpaper4", "wallpaper5","wallpaper6","wallpaper7","wallpaper8","wallpaper9","wallpaper10","wallpaper11","wallpaper12","wallpaper13","wallpaper14","wallpaper15","wallpaper16","wallpaper17","wallpaper18","wallpaper19","wallpaper20","wallpaper21","wallpaper22","wallpaper23","wallpaper24","wallpaper25","wallpaper26","wallpaper27","wallpaper28","wallpaper29","wallpaper30","wallpaper31","wallpaper32","wallpaper33","wallpaper34","wallpaper35","wallpaper36","wallpaper37","wallpaper38","wallpaper39", "wallpaper40", "wallpaper41", "wallpaper42", "wallpaper43", "wallpaper44", "wallpaper45", "wallpaper46"]
@@ -47,7 +49,7 @@ struct DeepSeekView: View {
                         Button(action: {
                             presentationMode.wrappedValue.dismiss()
                         }) {
-                            Text("<<")
+                            Image(systemName: "arrowshape.turn.up.backward")
                                 .font(.system(size: geo.size.width * 0.05, weight: .semibold))
                                 .foregroundColor(.white)
                                 .frame(width: geo.size.width * 0.12, height: geo.size.width * 0.12)
@@ -171,6 +173,7 @@ struct DeepSeekView: View {
         }
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
+       
     }
 
     // === MESSAGE HANDLING ===
@@ -216,15 +219,21 @@ struct DeepSeekView: View {
     
     // === CALL LLM API ===
     func contactLLM(userInput: String) {
+
         let url = URL(string: "https://openrouter.ai/api/v1/chat/completions")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(DeepSeek_API)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let json: [String: Any] = [
-            "model": "deepseek/deepseek-chat-v3.1:free",
-            "messages": [["role": "user", "content": userInput]]
+            "model": DeepSeek_Model,
+            "messages": [
+                [
+                    "role": "user",
+                          "content": userInput
+                ]
+            ]
         ]
         
         do {
@@ -241,7 +250,7 @@ struct DeepSeekView: View {
             }
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
-                appendAIMessage("⚠️ Invalid Response Try Again Later")
+                appendAIMessage("⚠️ Invalid Response Try again later, it might be an error with the API key or the AI Model if this issue continues try changing them from the settings")
                 return
             }
             guard let data = data else {

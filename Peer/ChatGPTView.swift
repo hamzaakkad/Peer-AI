@@ -5,10 +5,12 @@
 //  Created by Hamza Akkad on 04/09/2025.
 //
 import SwiftUI
-import Foundation // test for the repo upload and commit
+import Foundation
 struct ChatGPTView: View {
     @State private var messages: [Message] = []
     @State private var messageText: String = ""
+    @AppStorage("ChatGPT_API") private var ChatGPT_API: String = "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"
+    @AppStorage("ChatGPT_Model") private var ChatGPT_Model: String = "openai/gpt-oss-20b:free"
     @Environment(\.presentationMode) var presentationMode
     var wallpaper = Int.random(in: 0...46)
     @State private var wallpaperArray = ["wallpaper", "wallpaper2", "wallpaper3", "wallpaper4", "wallpaper5","wallpaper6","wallpaper7","wallpaper8","wallpaper9","wallpaper10","wallpaper11","wallpaper12","wallpaper13","wallpaper14","wallpaper15","wallpaper16","wallpaper17","wallpaper18","wallpaper19","wallpaper20","wallpaper21","wallpaper22","wallpaper23","wallpaper24","wallpaper25","wallpaper26","wallpaper27","wallpaper28","wallpaper29","wallpaper30","wallpaper31","wallpaper32","wallpaper33","wallpaper34","wallpaper35","wallpaper36","wallpaper37","wallpaper38","wallpaper39", "wallpaper40", "wallpaper41", "wallpaper42", "wallpaper43", "wallpaper44", "wallpaper45", "wallpaper46"]
@@ -35,7 +37,7 @@ struct ChatGPTView: View {
                         Button(action: {
                             presentationMode.wrappedValue.dismiss()
                         }) {
-                            Text("<<")
+                            Image(systemName: "arrowshape.turn.up.backward")
                                 .font(.system(size: geo.size.width * 0.05, weight: .semibold))
                                 .foregroundColor(.white)
                                 .frame(width: geo.size.width * 0.12, height: geo.size.width * 0.12)
@@ -208,11 +210,11 @@ struct ChatGPTView: View {
         let url = URL(string: "https://openrouter.ai/api/v1/chat/completions")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(ChatGPT_API)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let json: [String: Any] = [
-            "model": "openai/gpt-oss-20b:free",
+            "model": ChatGPT_Model,
                     "messages": [
                         [
                             "role": "user",
@@ -234,7 +236,7 @@ struct ChatGPTView: View {
             }
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
-                appendAIMessage("⚠️ Invalid Response Try Again Later")
+                appendAIMessage("⚠️ Invalid Response Try again later, it might be an error with the API key or the AI Model if this issue continues try changing them from the settings")
                 return
             }
             guard let data = data else {

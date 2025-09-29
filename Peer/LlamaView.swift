@@ -11,6 +11,8 @@ struct LlamaView: View {
     @State private var messages: [Message] = []
     @State private var messageText: String = ""
     @Environment(\.presentationMode) var presentationMode
+    @AppStorage("Llama_API") private var Llama_API: String = "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"
+    @AppStorage("Llama_Model") private var Llama_Model: String = "meta-llama/llama-3.3-8b-instruct:free"
     var wallpaper = Int.random(in: 0...46)
     @State private var wallpaperArray = ["wallpaper", "wallpaper2", "wallpaper3", "wallpaper4", "wallpaper5","wallpaper6","wallpaper7","wallpaper8","wallpaper9","wallpaper10","wallpaper11","wallpaper12","wallpaper13","wallpaper14","wallpaper15","wallpaper16","wallpaper17","wallpaper18","wallpaper19","wallpaper20","wallpaper21","wallpaper22","wallpaper23","wallpaper24","wallpaper25","wallpaper26","wallpaper27","wallpaper28","wallpaper29","wallpaper30","wallpaper31","wallpaper32","wallpaper33","wallpaper34","wallpaper35","wallpaper36","wallpaper37","wallpaper38","wallpaper39", "wallpaper40", "wallpaper41", "wallpaper42", "wallpaper43", "wallpaper44", "wallpaper45", "wallpaper46"]
     
@@ -36,7 +38,8 @@ struct LlamaView: View {
                         Button(action: {
                             presentationMode.wrappedValue.dismiss()
                         }) {
-                            Text("<<")
+                            //Text("<<")
+                            Image(systemName: "arrowshape.turn.up.backward")
                                 .font(.system(size: geo.size.width * 0.05, weight: .semibold))
                                 .foregroundColor(.white)
                                 .frame(width: geo.size.width * 0.12, height: geo.size.width * 0.12)
@@ -208,11 +211,11 @@ struct LlamaView: View {
         let url = URL(string: "https://openrouter.ai/api/v1/chat/completions")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(Llama_API)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let json: [String: Any] = [
-            "model": "meta-llama/llama-3.3-70b-instruct:free",
+            "model": Llama_Model,
                     "messages": [
                         [
                             "role": "user",
@@ -234,7 +237,7 @@ struct LlamaView: View {
             }
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
-                appendAIMessage("⚠️ Invalid Response Try Again Later")
+                appendAIMessage("⚠️ Invalid Response Try again later, it might be an error with the API key or the AI Model if this issue continues try changing them from the settings")
                 return
             }
             guard let data = data else {

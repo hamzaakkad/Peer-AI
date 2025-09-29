@@ -10,6 +10,8 @@ import Foundation
 struct DeepHermesView: View {
     @State private var messages: [Message] = []
     @State private var messageText: String = ""
+    @AppStorage("DeepHermer_API") private var DeepHermes_API: String = "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"
+    @AppStorage("DeepHermes_Model") private var DeepHermes_Model: String = "nousresearch/deephermes-3-llama-3-8b-preview:free"
     @Environment(\.presentationMode) var presentationMode
     var wallpaper = Int.random(in: 0...46)
     @State private var wallpaperArray = ["wallpaper", "wallpaper2", "wallpaper3", "wallpaper4", "wallpaper5","wallpaper6","wallpaper7","wallpaper8","wallpaper9","wallpaper10","wallpaper11","wallpaper12","wallpaper13","wallpaper14","wallpaper15","wallpaper16","wallpaper17","wallpaper18","wallpaper19","wallpaper20","wallpaper21","wallpaper22","wallpaper23","wallpaper24","wallpaper25","wallpaper26","wallpaper27","wallpaper28","wallpaper29","wallpaper30","wallpaper31","wallpaper32","wallpaper33","wallpaper34","wallpaper35","wallpaper36","wallpaper37","wallpaper38","wallpaper39", "wallpaper40", "wallpaper41", "wallpaper42", "wallpaper43", "wallpaper44", "wallpaper45", "wallpaper46"]
@@ -36,7 +38,7 @@ struct DeepHermesView: View {
                         Button(action: {
                             presentationMode.wrappedValue.dismiss()
                         }) {
-                            Text("<<")
+                            Image(systemName: "arrowshape.turn.up.backward")
                                 .font(.system(size: geo.size.width * 0.05, weight: .semibold))
                                 .foregroundColor(.white)
                                 .frame(width: geo.size.width * 0.12, height: geo.size.width * 0.12)
@@ -209,11 +211,11 @@ struct DeepHermesView: View {
         let url = URL(string: "https://openrouter.ai/api/v1/chat/completions")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(DeepHermes_API)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let json: [String: Any] = [
-            "model": "nousresearch/deephermes-3-llama-3-8b-preview:free",
+            "model": DeepHermes_Model,
                     "messages": [
                         [
                             "role": "user",
@@ -235,7 +237,7 @@ struct DeepHermesView: View {
             }
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
-                appendAIMessage("⚠️ Invalid Response Try Again Later")
+                appendAIMessage("⚠️ Invalid Response Try again later, it might be an error with the API key or the AI Model if this issue continues try changing them from the settings")
                 return
             }
             guard let data = data else {
